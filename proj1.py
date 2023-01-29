@@ -1,7 +1,7 @@
 """"
 Programa Simples para Treino
 um jogo onde fala a frase em ingles e tenho q acertar a frase em pt
-sao 2 chances em 4 opçoes:
+
 
 frases em engles sera uma lista
 frases em pt sera uma lista espelho da ingles
@@ -143,6 +143,8 @@ class Descobrindo_a_Frase:
             engine.say("Terminando o programa:")
             engine.runAndWait()
             jogar = False
+            os.system("cls")
+            
             return jogar
         else:
             print('Repetindo o Jogo')
