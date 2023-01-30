@@ -11,12 +11,19 @@ frases em pt sera uma lista espelho da ingles
 import pyttsx3
 import random
 import os
+from selenium import webdriver
+from selenium.webdriver.edge.options import Options
+from selenium.webdriver.common.by import By
+import time
 
 
 
 engine = pyttsx3.init()
+OPTION = Options()
+DRIVER = webdriver.Edge(options=OPTION)
 
 class Descobrindo_a_Frase:
+    
 
     frase_ingles = [
     'Never Say Goodbye',
@@ -45,6 +52,55 @@ class Descobrindo_a_Frase:
     def __init__(self,pontuacao,acertos) -> None:
         self.pontuacao = pontuacao
         self.acertos = acertos
+
+    def buscar_letra(self):
+        """
+            usar selelnium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
+
+            -escolher cantor da lista
+            -escolher musica da lista
+            -entrar no site
+            -buscar a musica em ingles e pt
+            -separar as frases
+            -retornar frase_i e frases pt
+            return tuple
+        """
+        # acessando do site de musica 
+        cantor = 'bon-jovi'
+        DRIVER.get(f'https://www.vagalume.com.br/{cantor}/')
+        time.sleep(5)
+        #pop_up = DRIVER.find_element(By.XPATH,"//div[id='privacy-policy-div']/button[@value='Fechar']")
+        #time.sleep(2)
+        #pop_up.click()
+        
+        buscar_lista_musica = DRIVER.find_elements(By.XPATH,'//ol[@id="topMusicList"]/li')
+        time.sleep(5)
+        lista_musica = []
+        i = 1
+        for i in range(len(buscar_lista_musica)):
+            if i==0:
+                sc = f"01"
+                nome = buscar_lista_musica[i].text.replace(sc,"")
+                nome = nome.replace(".\n","")
+            elif i < 9 and i>0:
+                sc = f"0{i+1}"
+                nome = buscar_lista_musica[i].text.replace(sc,"")
+                nome = nome.replace(".\n","")
+            elif i > 9 and i < 20:
+                sc = f"{i+1}"
+                nome = buscar_lista_musica[i].text.replace(sc,"")
+                nome = nome.replace(".\n","")
+            else:
+                sc = f"{i+1}"
+                nome = buscar_lista_musica[i].text.replace(sc,"")
+                nome = nome.replace(".\n","")
+
+            lista_musica.append(nome)
+        return lista_musica
+        
+        # gerando lista de musicas mais tocadas para escolher
+
+
 
     def intro(self):
         """
@@ -153,7 +209,14 @@ class Descobrindo_a_Frase:
 
 test = Descobrindo_a_Frase(0,0)
 jogar =  True
+
+test.buscar_letra()
+
+
+
+"""
+
 while jogar == True:
     a = test.intro()
     b =test.display_frases(a)
-    jogar = test.result(a,b)
+    jogar = test.result(a,b)"""
