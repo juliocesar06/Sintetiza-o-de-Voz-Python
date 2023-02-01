@@ -25,31 +25,9 @@ DRIVER = webdriver.Edge(options=OPTION)
 
 class Descobrindo_a_Frase:
     
-    lista_cantor = ['bon-jovi','bryan-adams',"gun's-roses",'scorpions']
+    lista_cantor = ['bon-jovi','bryan-adams','scorpions','maroon 5']
 
-    frase_ingles = [
-    'Never Say Goodbye',
-    'The night about to end',
-    'I pass my time with strangers',
-    "But this bottle's my only friend",
-    "Never say goodbye, never say goodbye",
-    "You and me and my old friends",
-    "Hoping it would never end",
-    "Never say goodbye, never say goodbye",
-    "Holdin' on - we got to try",
-    "Holdin' on to never say goodbye"
-    ]
-    frase_pt =[
-    'Nunca diga adeus',
-    "A noite prestes a terminar",
-    'Eu passo meu tempo com estranhos',
-    "Mas esta garrafa é minha única amiga",
-    "Nunca diga adeus, nunca diga adeus",
-    "Você e eu e meus velhos amigos",
-    "Esperando que nunca acabasse",
-    "Nunca diga adeus, nunca diga adeus",
-    "Segure-se nós temos que tentar",
-    "Segure-se para nunca dizer adeus"]
+    
 
     def __init__(self,pontuacao,acertos) -> None:
         self.pontuacao = pontuacao
