@@ -20,10 +20,12 @@ import time
 
 engine = pyttsx3.init()
 OPTION = Options()
+OPTION.add_argument('--headless')
 DRIVER = webdriver.Edge(options=OPTION)
 
 class Descobrindo_a_Frase:
     
+    lista_cantor = ['bon-jovi','bryan-adams',"gun's-roses",'scorpions']
 
     frase_ingles = [
     'Never Say Goodbye',
@@ -53,7 +55,7 @@ class Descobrindo_a_Frase:
         self.pontuacao = pontuacao
         self.acertos = acertos
 
-    def buscar_letra(self):
+    def buscar_site(self,cantor):
         """
             usar selelnium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
 
@@ -66,15 +68,12 @@ class Descobrindo_a_Frase:
             return tuple
         """
         # acessando do site de musica 
-        cantor = 'bon-jovi'
         DRIVER.get(f'https://www.vagalume.com.br/{cantor}/')
-        time.sleep(5)
         #pop_up = DRIVER.find_element(By.XPATH,"//div[id='privacy-policy-div']/button[@value='Fechar']")
         #time.sleep(2)
         #pop_up.click()
         
         buscar_lista_musica = DRIVER.find_elements(By.XPATH,'//ol[@id="topMusicList"]/li')
-        time.sleep(5)
         lista_musica = []
         i = 1
         for i in range(len(buscar_lista_musica)):
@@ -97,12 +96,94 @@ class Descobrindo_a_Frase:
 
             lista_musica.append(nome)
         return lista_musica
+
+
+    def buscar_letra(self,cantor,musica):
+        """
+            usar selelnium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
+
+            -escolher cantor da lista
+            -escolher musica da lista
+            -entrar no site
+            -buscar a musica em ingles e pt
+            -separar as frases
+            -retornar frase_i e frases pt
+            return tuple
+        """
+        # acessando do site de musica 
+        DRIVER.get(f'https://www.vagalume.com.br/{cantor}/{musica}-traducao.html')
+     
+        #pop_up = DRIVER.find_element(By.XPATH,"//div[id='privacy-policy-div']/button[@value='Fechar']")
+        #time.sleep(2)
+        #pop_up.click()
+        
+        buscar_lista_letras = DRIVER.find_elements(By.XPATH,'//div[@id="lyricsPair"]/div/p')
+  
+        lista_musica = []
+        i = 1
+        for i in buscar_lista_letras:
+            if i.text == "" or i.text == ' ' or len(i.text) < 2:
+                pass
+            else:
+                lista_musica.append(i.text)
+                print(i.text)
+        lista_musica_pt = []
+        lista_musica_en = []
+        for i in range(len(lista_musica)):
+            if i < len(lista_musica)/2:
+                lista_musica_en.append(lista_musica[i])
+            else:
+                lista_musica_pt.append(lista_musica[i])
+        
+        print("lista ingles")
+        print('#'*33)
+        for i in lista_musica_en:
+            print(i)
+        print("lista pt")
+        print('#'*33)
+        for i in lista_musica_pt:
+            print(i)
+        m = (lista_musica_en,lista_musica_pt)
+        return m
+
+   
         
         # gerando lista de musicas mais tocadas para escolher
+    def escolher_cantor_e_musica(self):
+        """
+            selelciona um cantor da lista de cantores ou digite seu cantar
+            retorna a lista das 20 mais tocadas
+            escolhe uma das 20 musica e gera as frases para jogar
+        """
+        cantor = self.lista_cantor
+        print('escolha o cantor da lista para treinar:')
+        for i in range(len(cantor)):
+            
+            print(f"""
+            |--------------------------|
+            |      {i}:{cantor[i]}     |
+            |--------------------------|
+            """)
+        cantor_escolhido  = int(input("escolha o cantor que voçe deseja treinar a musica"))
+        musicas = self.buscar_site(cantor[cantor_escolhido])
+        print('escolha a musica da lista para treinar:')
+        for i in range(len(musicas)):
+            
+            print(f"""
+            |--------------------------|
+            |      {i}:{musicas[i]}    |
+            |--------------------------|""")
+        musica_escolhida  = int(input("escolha uma musica para voçe deseja treinar: "))
+        mus = musicas[musica_escolhida].replace(" ","-")
+        mus = mus.replace("(","")
+        mus = mus.replace(")","")
+        mus = mus.lower()
+        m = self.buscar_letra(cantor[cantor_escolhido],mus)
+        return m
+        
 
 
-
-    def intro(self):
+    def intro(self,frase_ingles,frase_pt):
         """
             mostrar a intro e pedir pra escolher um numeor de 0 a 10
         
@@ -111,18 +192,18 @@ class Descobrindo_a_Frase:
         print("="*30)
         print()
         # seleciona um numero aleatorio
-        n =  random.randint(0,len(self.frase_ingles))
+        n =  random.randint(0,len(frase_ingles))
         # escolhendo frase em ingles
-        frase = self.frase_ingles[n]
+        frase = frase_ingles[n]
         # pegando a traduçao
-        trad = self.frase_pt[n]
+        trad = frase_pt[n]
         # colocando traduçao na lista de respostas
         opcoes= [trad,]
         # escolhe as outras 3 que vao compor o quiz
         while len(opcoes)<4:
-            op = random.choice(self.frase_pt)
+            op = random.choice(frase_pt)
             if op in opcoes:
-                random.choice(self.frase_pt)
+                random.choice(frase_pt)
             else:
                 opcoes.append(op)
         obj = {"frase_i":frase,"frase_pt":trad,"alternativas":opcoes}
@@ -204,19 +285,19 @@ class Descobrindo_a_Frase:
             return jogar
         else:
             print('Repetindo o Jogo')
-    def buscar_frase():
-        pass
+            jogar == True
+            return jogar 
+    
 
 test = Descobrindo_a_Frase(0,0)
 jogar =  True
 
-test.buscar_letra()
+musicas = test.escolher_cantor_e_musica()
+frase_pt = musicas[1]
+frase_en = musicas[0]
 
-
-
-"""
 
 while jogar == True:
-    a = test.intro()
+    a = test.intro(frase_en,frase_pt)
     b =test.display_frases(a)
-    jogar = test.result(a,b)"""
+    jogar = test.result(a,b)
