@@ -19,13 +19,15 @@ import time
 
 
 engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice','HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\TTS_MS_EN-US_ZIRA_11.0')
 OPTION = Options()
 OPTION.add_argument('--headless')
 DRIVER = webdriver.Edge(options=OPTION)
 
 class Descobrindo_a_Frase:
     
-    lista_cantor = ['bon-jovi','bryan-adams','scorpions','maroon 5']
+    lista_cantor = []
 
     
 
@@ -33,6 +35,14 @@ class Descobrindo_a_Frase:
         self.pontuacao = pontuacao
         self.acertos = acertos
 
+    def buscar_cantor(self):
+        DRIVER.get('https://www.vagalume.com.br/browse/style/hard-rock.html')
+        lista = DRIVER.find_elements(By.XPATH,"//ul[@class='xsList2 smList3 mdList6 gridList'][2]/li")
+        for i in lista:
+            a = i.text.lower()
+            a =  a.replace(" ","-")
+            self.lista_cantor.append(a)
+        
     def buscar_site(self,cantor):
         """
             usar selelnium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
@@ -203,6 +213,20 @@ class Descobrindo_a_Frase:
         engine.say(obj["frase_i"])
         engine.runAndWait()
         print('#'*30)
+        
+        while True:
+            r = input("aperte r para repetir ou qualquer tecla pra continuar:")
+            if r == "r" or  r == "R":
+                print('#'*30)
+                print()
+                # imprimindo frase ingles
+                print(obj["frase_i"])
+                # falando a frase
+                engine.say(obj["frase_i"])
+                engine.runAndWait()
+                print('#'*30)
+            else:
+                break
         #------------------------------------------------------------------
         
         print('escolha a traduçao:')
@@ -229,7 +253,11 @@ class Descobrindo_a_Frase:
             """
         )
         print("Qual a opçao Esta Certa: a,b,c ou d")
-        r = input()
+        while True:
+            r = input()
+            if r != 'a' or r != 'b' or r != 'c' or r != 'd':
+                print("tem q ser a,b,c ou d")
+            break
         resp = dicio_resp[r]
         return resp
        
@@ -259,23 +287,21 @@ class Descobrindo_a_Frase:
             engine.runAndWait()
             jogar = False
             os.system("cls")
-            
-            return jogar
         else:
             print('Repetindo o Jogo')
-            jogar == True
-            return jogar 
-    
+            jogar =True
+        return jogar
 
 test = Descobrindo_a_Frase(0,0)
 jogar =  True
 
+test.buscar_cantor()
 musicas = test.escolher_cantor_e_musica()
 frase_pt = musicas[1]
 frase_en = musicas[0]
 
 
 while jogar == True:
-    a = test.intro(frase_en,frase_pt)
+    a = test.intro(frase_pt,frase_en)
     b =test.display_frases(a)
     jogar = test.result(a,b)
