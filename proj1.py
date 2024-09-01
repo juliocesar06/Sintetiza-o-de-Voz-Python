@@ -41,6 +41,7 @@ class Descobrindo_a_Frase:
         for i in lista:
             a = i.text.lower()
             a =  a.replace(" ","-")
+            a = a.replace('/','-')
             self.lista_cantor.append(a)
         
     def buscar_site(self,cantor):
@@ -88,7 +89,7 @@ class Descobrindo_a_Frase:
 
     def buscar_letra(self,cantor,musica):
         """
-            usar selelnium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
+            usar selenium para buscar em um site de musica a letra de uma musica escolhida pelo usuario
 
             -escolher cantor da lista
             -escolher musica da lista
@@ -139,7 +140,7 @@ class Descobrindo_a_Frase:
         # gerando lista de musicas mais tocadas para escolher
     def escolher_cantor_e_musica(self):
         """
-            selelciona um cantor da lista de cantores ou digite seu cantar
+            selelciona um cantor da lista de cantores
             retorna a lista das 20 mais tocadas
             escolhe uma das 20 musica e gera as frases para jogar
         """
@@ -152,16 +153,27 @@ class Descobrindo_a_Frase:
             |      {i}:{cantor[i]}     |
             |--------------------------|
             """)
-        cantor_escolhido  = int(input("escolha o cantor que voçe deseja treinar a musica"))
+        while True:
+            cantor_escolhido  = int(input("escolha o cantor que voçe deseja treinar a musica"))
+
+            if cantor_escolhido< 0 or cantor_escolhido > 20 or type(cantor_escolhido) != int:
+                continue
+            break
         musicas = self.buscar_site(cantor[cantor_escolhido])
         print('escolha a musica da lista para treinar:')
         for i in range(len(musicas)):
             
             print(f"""
-            |--------------------------|
-            |      {i}:{musicas[i]}    |
-            |--------------------------|""")
-        musica_escolhida  = int(input("escolha uma musica para voçe deseja treinar: "))
+            |-----------------------------------------|
+            |      {i}:{musicas[i]}                   |
+        
+            |-----------------------------------------|""")
+        while True:
+            musica_escolhida  = int(input("escolha uma musica para voçe deseja treinar: "))
+            if musica_escolhida < 0 or musica_escolhida > 20 or type(musica_escolhida) != int:
+                continue
+            break
+        musica_escolhida 
         mus = musicas[musica_escolhida].replace(" ","-")
         mus = mus.replace("(","")
         mus = mus.replace(")","")
@@ -186,7 +198,7 @@ class Descobrindo_a_Frase:
         # pegando a traduçao
         trad = frase_pt[n]
         # colocando traduçao na lista de respostas
-        opcoes= [trad,]
+        opcoes= [trad]
         # escolhe as outras 3 que vao compor o quiz
         while len(opcoes)<4:
             op = random.choice(frase_pt)
@@ -196,10 +208,7 @@ class Descobrindo_a_Frase:
                 opcoes.append(op)
         obj = {"frase_i":frase,"frase_pt":trad,"alternativas":opcoes}
         return obj
-
-
-
-        pass
+    
     def display_frases(self,obj):
         """
             mostrar a frase correspondente e suas opçoes
@@ -253,6 +262,7 @@ class Descobrindo_a_Frase:
             """
         )
         print("Qual a opçao Esta Certa: a,b,c ou d")
+
         while True:
             r = input()
             if r != 'a' or r != 'b' or r != 'c' or r != 'd':
@@ -271,10 +281,15 @@ class Descobrindo_a_Frase:
             print('voçe acertou....')
             engine.say('voçe acertou....')
             engine.runAndWait()
+            self.pontuacao += 10
+            print(self.pontuacao)
         else:
             print("Voçe Errou...")
             engine.say('voçe Errou....')
             engine.runAndWait()
+            self.pontuacao -= 10
+            print(self.pontuacao)
+
         print('Deseja sair do jogo')
         print('s ou S para sair ou n ou N para continuar...')
         
